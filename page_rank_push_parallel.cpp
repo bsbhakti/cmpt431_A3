@@ -47,24 +47,24 @@ void pageRankThread(thread_args *thread_args){
     // for each vertex 'v' in this subset of vertices, process all its inNeighbors 'u'
         for (uintV startIndexCopy = startIndex; startIndexCopy < endIndex; startIndexCopy++){
             uintE out_degree = g->vertices_[startIndexCopy].getOutDegree();
-            std::cout<<"Number of out degree"<< out_degree<<std::endl;
+            // std::cout<<"Number of out degree"<< out_degree<<std::endl;
             for (uintE i = 0; i < out_degree; i++) {
                 uintV v = g->vertices_[startIndexCopy].getOutNeighbor(i);
                 //have vertex lock here
-                std::cout<<"Vertext locked"<<std::endl;
+                // std::cout<<"Vertext locked"<<std::endl;
                 pr_next_mutex.lock();
                 pr_next[v] += (pr_curr[startIndexCopy] / (PageRankType) out_degree);
                 pr_next_mutex.unlock();
-                std::cout<<"Vertext unlocked"<<std::endl;
+                // std::cout<<"Vertext unlocked"<<std::endl;
 
                 //vertex unlock
             }
         }
-    std::cout<<"Waiting at the barrier"<<std::endl;
+    // std::cout<<"Waiting at the barrier"<<std::endl;
 
     // barrier wait here because we are about the switch curr and next
     barrier->wait();
-    std::cout<<"Done Waiting at the barrier"<<std::endl;
+    // std::cout<<"Done Waiting at the barrier"<<std::endl;
 
     for (uintV v = startIndex; v < endIndex; v++) {
       pr_next[v] = PAGE_RANK(pr_next[v]);
@@ -95,7 +95,7 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   // Push based pagerank
   timer t1;
   double time_taken = 0.0;
-  
+  std::cout<<"Total num vertices "<<g.n_<<std::endl;
   uint numOfVerPerThread = g.n_/nThreads;
   uint remainder = g.n_% nThreads;
   uint startIndex = 0;
@@ -110,7 +110,7 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
         startIndex += remainder;
     }
     endIndex = startIndex + numOfVerPerThread;
-    // std::cout<<"StartInd: "<< startIndex<<"EndInd: "<<endIndex<< "Thread: "<<i<<std::endl;
+    std::cout<<"StartInd: "<< startIndex<<"EndInd: "<<endIndex<< "Thread: "<<i<<std::endl;
     all_arguments[i].g = &g;
     all_arguments[i].max_iter = max_iters;
     all_arguments[i].startIndex = startIndex;
@@ -184,6 +184,7 @@ int main(int argc, char *argv[]) {
   std::cout << "Reading graph\n";
   g.readGraphFromBinary<int>(input_file_path);
   std::cout << "Created graph\n";
+  barrier = new CustomBarrier((int)n_threads);
   pageRankSerial(g, max_iterations,n_threads);
 
   return 0;
