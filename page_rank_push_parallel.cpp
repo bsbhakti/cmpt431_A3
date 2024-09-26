@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <thread>
 
-
 #ifdef USE_INT
 #define INIT_PAGE_RANK 100000
 #define EPSILON 1000
@@ -18,11 +17,11 @@ typedef int64_t PageRankType;
 #define DAMPING 0.85
 #define PAGE_RANK(x) (1 - DAMPING + DAMPING * x)
 #define CHANGE_IN_PAGE_RANK(x, y) std::fabs(x - y)
-#define nullptr nullptr
 typedef double PageRankType;
 #endif
 
 CustomBarrier *barrier = nullptr;
+std::mutex pr_next_mutex;
 
 struct thread_args {
     Graph *g;
@@ -34,37 +33,38 @@ struct thread_args {
     double time_taken;
 };
 
-
 void pageRankThread(thread_args *thread_args){
-    // std::cout<<"Inside thread method"<<std::endl;
     timer local;
     local.start();
+    std::cout<<"Inside method"<<std::endl;
     Graph *g = thread_args->g; 
     int max_iter = thread_args->max_iter; 
     uintV startIndex  = thread_args->startIndex; 
     uintV endIndex  = thread_args->endIndex; 
     PageRankType* pr_curr  = thread_args->pr_curr; 
     PageRankType *pr_next  = thread_args->pr_next; 
-  for (int iter = 0; iter < max_iter; iter++) {
+    for (int iter = 0; iter < max_iter; iter++) {
     // for each vertex 'v' in this subset of vertices, process all its inNeighbors 'u'
-    for (uintV startIndexCopy = startIndex; startIndexCopy < endIndex; startIndexCopy++){
-        uintE in_degree = g->vertices_[startIndexCopy].getInDegree();
-        // std::cout<<"Number of in degree"<< in_degree<<std::endl;
+        for (uintV startIndexCopy = startIndex; startIndexCopy < endIndex; startIndexCopy++){
+            uintE out_degree = g->vertices_[startIndexCopy].getOutDegree();
+            std::cout<<"Number of out degree"<< out_degree<<std::endl;
+            for (uintE i = 0; i < out_degree; i++) {
+                uintV v = g->vertices_[startIndexCopy].getOutNeighbor(i);
+                //have vertex lock here
+                std::cout<<"Vertext locked"<<std::endl;
+                pr_next_mutex.lock();
+                pr_next[v] += (pr_curr[startIndexCopy] / (PageRankType) out_degree);
+                pr_next_mutex.unlock();
+                std::cout<<"Vertext unlocked"<<std::endl;
 
-      for (uintE i = 0; i < in_degree; i++) {
-        uintV u = g->vertices_[startIndexCopy].getInNeighbor(i);
-        uintE u_out_degree = g->vertices_[u].getOutDegree();
-        if (u_out_degree > 0)
-            pr_next[startIndexCopy] += (pr_curr[u] / (PageRankType) u_out_degree);
-      }
-    }
-    // std::cout<<"Waiting at the barrier"<<std::endl;
+                //vertex unlock
+            }
+        }
+    std::cout<<"Waiting at the barrier"<<std::endl;
 
     // barrier wait here because we are about the switch curr and next
     barrier->wait();
-    // std::cout<<"Done Waiting at the barrier"<<std::endl;
-
-    
+    std::cout<<"Done Waiting at the barrier"<<std::endl;
 
     for (uintV v = startIndex; v < endIndex; v++) {
       pr_next[v] = PAGE_RANK(pr_next[v]);
@@ -77,7 +77,6 @@ void pageRankThread(thread_args *thread_args){
 
   }
   thread_args->time_taken = local.stop();
-
 }
 
 void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
@@ -93,7 +92,7 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
     pr_next[i] = 0.0;
   }
 
-  // Pull based pagerank
+  // Push based pagerank
   timer t1;
   double time_taken = 0.0;
   
@@ -104,6 +103,7 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   t1.start();
   // Create threads and distribute the work across T threads
   // -------------------------------------------------------------------
+
   for (uint i =0 ; i < nThreads; i++){
     startIndex = endIndex;
     if( i == 0){
@@ -127,13 +127,12 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
         }
     }
   time_taken = t1.stop();
-
-
-  // -------------------------------------------------------------------
+   // -------------------------------------------------------------------
   std::cout << "thread_id, time_taken" << std::endl;
   for (int i = 0 ; i<nThreads; i++){
     std::cout << i<<", " << all_arguments[i].time_taken << std::endl;
   }
+
   // Print the above statistics for each thread
   // Example output for 2 threads:
   // thread_id, time_taken
@@ -148,13 +147,12 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   std::cout << "Time taken (in seconds) : " << time_taken << "\n";
   delete[] pr_curr;
   delete[] pr_next;
+
 }
-
-
 
 int main(int argc, char *argv[]) {
   cxxopts::Options options(
-      "page_rank_pull",
+      "page_rank_push",
       "Calculate page_rank using serial and parallel execution");
   options.add_options(
       "",
@@ -174,9 +172,9 @@ int main(int argc, char *argv[]) {
   std::string input_file_path = cl_options["inputFile"].as<std::string>();
 
 #ifdef USE_INT
-  std::cout << "Using INT\n";
+  std::cout << "Using INT" << std::endl;
 #else
-  std::cout << "Using DOUBLE\n";
+  std::cout << "Using DOUBLE" << std::endl;
 #endif
   std::cout << std::fixed;
   std::cout << "Number of Threads : " << n_threads << std::endl;
@@ -186,9 +184,7 @@ int main(int argc, char *argv[]) {
   std::cout << "Reading graph\n";
   g.readGraphFromBinary<int>(input_file_path);
   std::cout << "Created graph\n";
-  barrier = new CustomBarrier((int)n_threads);
-
-  pageRankSerial(g, max_iterations, n_threads);
+  pageRankSerial(g, max_iterations,n_threads);
 
   return 0;
 }
