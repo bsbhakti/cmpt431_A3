@@ -31,18 +31,21 @@ struct thread_args {
     PageRankType* pr_curr;
     PageRankType *pr_next;
     double time_taken;
+    std::mutex *all_mutex;
 };
 
 void pageRankThread(thread_args *thread_args){
     timer local;
     local.start();
-    std::cout<<"Inside method"<<std::endl;
+    // std::cout<<"Inside method"<<std::endl;
     Graph *g = thread_args->g; 
     int max_iter = thread_args->max_iter; 
     uintV startIndex  = thread_args->startIndex; 
     uintV endIndex  = thread_args->endIndex; 
     PageRankType* pr_curr  = thread_args->pr_curr; 
     PageRankType *pr_next  = thread_args->pr_next; 
+    std::mutex *all_mutex = thread_args->all_mutex;
+
     for (int iter = 0; iter < max_iter; iter++) {
     // for each vertex 'v' in this subset of vertices, process all its inNeighbors 'u'
         for (uintV startIndexCopy = startIndex; startIndexCopy < endIndex; startIndexCopy++){
@@ -52,9 +55,11 @@ void pageRankThread(thread_args *thread_args){
                 uintV v = g->vertices_[startIndexCopy].getOutNeighbor(i);
                 //have vertex lock here
                 // std::cout<<"Vertext locked"<<std::endl;
-                pr_next_mutex.lock();
+                // pr_next_mutex.lock();
+                all_mutex[v].lock();
                 pr_next[v] += (pr_curr[startIndexCopy] / (PageRankType) out_degree);
-                pr_next_mutex.unlock();
+                // pr_next_mutex.unlock();
+                all_mutex[v].unlock();
                 // std::cout<<"Vertext unlocked"<<std::endl;
 
                 //vertex unlock
@@ -86,6 +91,7 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   PageRankType *pr_next = new PageRankType[n];
   std::vector<std::thread> all_threads(nThreads);
   thread_args *all_arguments = new thread_args [nThreads]; 
+  std::mutex *all_mutex = new std::mutex [g.n_]; 
 
   for (uintV i = 0; i < n; i++) {
     pr_curr[i] = INIT_PAGE_RANK;
@@ -110,13 +116,14 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
         startIndex += remainder;
     }
     endIndex = startIndex + numOfVerPerThread;
-    std::cout<<"StartInd: "<< startIndex<<"EndInd: "<<endIndex<< "Thread: "<<i<<std::endl;
+    // std::cout<<"StartInd: "<< startIndex<<"EndInd: "<<endIndex<< "Thread: "<<i<<std::endl;
     all_arguments[i].g = &g;
     all_arguments[i].max_iter = max_iters;
     all_arguments[i].startIndex = startIndex;
     all_arguments[i].endIndex = endIndex;
     all_arguments[i].pr_curr = pr_curr;
     all_arguments[i].pr_next = pr_next;
+    all_arguments[i].all_mutex = all_mutex;
 
     std::thread new_thread(pageRankThread,&all_arguments[i]);
     all_threads.push_back(std::move(new_thread));
