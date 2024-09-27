@@ -157,7 +157,8 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   std::cout << "Time taken (in seconds) : " << time_taken << "\n";
   delete[] pr_curr;
   delete[] pr_next;
-
+  delete[] all_mutex;
+  delete[] all_arguments;
 }
 
 int main(int argc, char *argv[]) {

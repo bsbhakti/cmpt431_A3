@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <thread>
 
-
 #ifdef USE_INT
 #define INIT_PAGE_RANK 100000
 #define EPSILON 1000
@@ -18,7 +17,6 @@ typedef int64_t PageRankType;
 #define DAMPING 0.85
 #define PAGE_RANK(x) (1 - DAMPING + DAMPING * x)
 #define CHANGE_IN_PAGE_RANK(x, y) std::fabs(x - y)
-#define nullptr nullptr
 typedef double PageRankType;
 #endif
 
@@ -30,73 +28,82 @@ struct thread_args {
     uintV startIndex;
     uintV endIndex;
     PageRankType* pr_curr;
-    PageRankType *pr_next;
+    // PageRankType *pr_next;
     double time_taken;
+    std::atomic<PageRankType> *all_atomic;
 };
 
-
 void pageRankThread(thread_args *thread_args){
-    // std::cout<<"Inside thread method"<<std::endl;
     timer local;
     local.start();
+    // std::cout<<"Inside method"<<std::endl;
     Graph *g = thread_args->g; 
     int max_iter = thread_args->max_iter; 
     uintV startIndex  = thread_args->startIndex; 
     uintV endIndex  = thread_args->endIndex; 
     PageRankType* pr_curr  = thread_args->pr_curr; 
-    PageRankType *pr_next  = thread_args->pr_next; 
-  for (int iter = 0; iter < max_iter; iter++) {
-    // for each vertex 'v' in this subset of vertices, process all its inNeighbors 'u'
-    for (uintV startIndexCopy = startIndex; startIndexCopy < endIndex; startIndexCopy++){
-        uintE in_degree = g->vertices_[startIndexCopy].getInDegree();
-        // std::cout<<"Number of in degree"<< in_degree<<std::endl;
+    // PageRankType *pr_next  = thread_args->pr_next; 
+    std::atomic<PageRankType> *all_atomic = thread_args->all_atomic;
+    
 
-      for (uintE i = 0; i < in_degree; i++) {
-        uintV u = g->vertices_[startIndexCopy].getInNeighbor(i);
-        uintE u_out_degree = g->vertices_[u].getOutDegree();
-        if (u_out_degree > 0)
-            pr_next[startIndexCopy] += (pr_curr[u] / (PageRankType) u_out_degree);
-      }
-    }
+    for (int iter = 0; iter < max_iter; iter++) {
+    // for each vertex 'v' in this subset of vertices, process all its inNeighbors 'u'
+        for (uintV startIndexCopy = startIndex; startIndexCopy < endIndex; startIndexCopy++){
+            uintE out_degree = g->vertices_[startIndexCopy].getOutDegree();
+            // std::cout<<"Number of out degree"<< out_degree<<std::endl;
+            for (uintE i = 0; i < out_degree; i++) {
+                uintV v = g->vertices_[startIndexCopy].getOutNeighbor(i);
+                PageRankType vRank = pr_curr[startIndexCopy];
+                PageRankType out_degree_page_rank = (PageRankType) out_degree;
+                PageRankType previous = all_atomic[v].load();
+                PageRankType newVal = previous + (vRank / out_degree_page_rank);
+                while(!all_atomic[v].compare_exchange_weak(previous, newVal)){
+                    previous = all_atomic[v].load();
+                    newVal = previous + (vRank / out_degree_page_rank);
+                }
+                // pr_next[v] += (pr_curr[startIndexCopy] / (PageRankType) out_degree);
+            }
+        }
+        
     // std::cout<<"Waiting at the barrier"<<std::endl;
+
 
     // barrier wait here because we are about the switch curr and next
     barrier->wait();
     // std::cout<<"Done Waiting at the barrier"<<std::endl;
 
-    
-
     for (uintV v = startIndex; v < endIndex; v++) {
-      pr_next[v] = PAGE_RANK(pr_next[v]);
+      all_atomic[v] = PAGE_RANK(all_atomic[v]);
 
       // reset pr_curr for the next iteration
-      pr_curr[v] = pr_next[v];
-      pr_next[v] = 0.0;
+      pr_curr[v] = all_atomic[v];
+      all_atomic[v] = 0.0;
     }
     barrier->wait();
 
   }
   thread_args->time_taken = local.stop();
-
 }
 
 void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   uintV n = g.n_;
 
   PageRankType *pr_curr = new PageRankType[n];
-  PageRankType *pr_next = new PageRankType[n];
+//   PageRankType *pr_next = new PageRankType[n];
   std::vector<std::thread> all_threads(nThreads);
   thread_args *all_arguments = new thread_args [nThreads]; 
+  std::atomic<PageRankType> *all_atomic = new std::atomic <PageRankType> [g.n_]; 
 
   for (uintV i = 0; i < n; i++) {
     pr_curr[i] = INIT_PAGE_RANK;
-    pr_next[i] = 0.0;
+    // pr_next[i] = 0.0;
+    all_atomic[i] = 0.0;
   }
 
-  // Pull based pagerank
+  // Push based pagerank
   timer t1;
   double time_taken = 0.0;
-  
+//   std::cout<<"Total num vertices "<<g.n_<<std::endl;
   uint numOfVerPerThread = g.n_/nThreads;
   uint remainder = g.n_% nThreads;
   uint startIndex = 0;
@@ -104,9 +111,11 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   t1.start();
   // Create threads and distribute the work across T threads
   // -------------------------------------------------------------------
+
   for (uint i =0 ; i < nThreads; i++){
     startIndex = endIndex;
-    endIndex = startIndex + numOfVerPerThread;
+    endIndex = startIndex + numOfVerPerThread; 
+
     if( i == 0){
         endIndex += remainder;
     }
@@ -116,7 +125,8 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
     all_arguments[i].startIndex = startIndex;
     all_arguments[i].endIndex = endIndex;
     all_arguments[i].pr_curr = pr_curr;
-    all_arguments[i].pr_next = pr_next;
+    // all_arguments[i].pr_next = pr_next;
+    all_arguments[i].all_atomic = all_atomic;
 
     std::thread new_thread(pageRankThread,&all_arguments[i]);
     all_threads.push_back(std::move(new_thread));
@@ -127,13 +137,12 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
         }
     }
   time_taken = t1.stop();
-
-
-  // -------------------------------------------------------------------
+   // -------------------------------------------------------------------
   std::cout << "thread_id, time_taken" << std::endl;
   for (int i = 0 ; i<nThreads; i++){
     std::cout << i<<", " << all_arguments[i].time_taken << std::endl;
   }
+
   // Print the above statistics for each thread
   // Example output for 2 threads:
   // thread_id, time_taken
@@ -147,15 +156,14 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   std::cout << "Sum of page ranks : " << sum_of_page_ranks << "\n";
   std::cout << "Time taken (in seconds) : " << time_taken << "\n";
   delete[] pr_curr;
-  delete[] pr_next;
+//   delete[] pr_next;
+  delete[] all_atomic;
   delete[] all_arguments;
 }
 
-
-
 int main(int argc, char *argv[]) {
   cxxopts::Options options(
-      "page_rank_pull",
+      "page_rank_push",
       "Calculate page_rank using serial and parallel execution");
   options.add_options(
       "",
@@ -175,9 +183,9 @@ int main(int argc, char *argv[]) {
   std::string input_file_path = cl_options["inputFile"].as<std::string>();
 
 #ifdef USE_INT
-  std::cout << "Using INT\n";
+  std::cout << "Using INT" << std::endl;
 #else
-  std::cout << "Using DOUBLE\n";
+  std::cout << "Using DOUBLE" << std::endl;
 #endif
   std::cout << std::fixed;
   std::cout << "Number of Threads : " << n_threads << std::endl;
@@ -188,8 +196,7 @@ int main(int argc, char *argv[]) {
   g.readGraphFromBinary<int>(input_file_path);
   std::cout << "Created graph\n";
   barrier = new CustomBarrier((int)n_threads);
-
-  pageRankSerial(g, max_iterations, n_threads);
+  pageRankSerial(g, max_iterations,n_threads);
 
   return 0;
 }
