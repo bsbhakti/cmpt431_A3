@@ -45,10 +45,7 @@ void pageRankThread(thread_args *thread_args){
     PageRankType* pr_curr  = thread_args->pr_curr; 
     PageRankType *pr_next  = thread_args->pr_next; 
     std::mutex *all_mutex = thread_args->all_mutex;
-    // PageRankType pr_next_local [g->n_];
-    // for (uintV i = 0; i < g->n_; i++) {
-    //     pr_next_local[i] = 0.0;
-    // }
+    
 
     for (int iter = 0; iter < max_iter; iter++) {
     // for each vertex 'v' in this subset of vertices, process all its inNeighbors 'u'
@@ -117,10 +114,11 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
 
   for (uint i =0 ; i < nThreads; i++){
     startIndex = endIndex;
+    endIndex = startIndex + numOfVerPerThread; 
+
     if( i == 0){
-        startIndex += remainder;
+        endIndex += remainder;
     }
-    endIndex = startIndex + numOfVerPerThread;
     // std::cout<<"StartInd: "<< startIndex<<"EndInd: "<<endIndex<< "Thread: "<<i<<std::endl;
     all_arguments[i].g = &g;
     all_arguments[i].max_iter = max_iters;
