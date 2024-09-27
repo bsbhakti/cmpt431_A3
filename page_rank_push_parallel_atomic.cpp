@@ -49,14 +49,18 @@ void pageRankThread(thread_args *thread_args){
     for (int iter = 0; iter < max_iter; iter++) {
     // for each vertex 'v' in this subset of vertices, process all its inNeighbors 'u'
         for (uintV startIndexCopy = startIndex; startIndexCopy < endIndex; startIndexCopy++){
-            uintE out_degree = g->vertices_[startIndexCopy].getOutDegree();
+            Vertex u = g->vertices_[startIndexCopy];
+            uintE out_degree = u.getOutDegree();
+            PageRankType out_degree_page_rank = (PageRankType) out_degree;
+            uintV * outNeighbors = u.getOutNeighbors();
+
             // std::cout<<"Number of out degree"<< out_degree<<std::endl;
             for (uintE i = 0; i < out_degree; i++) {
-                uintV v = g->vertices_[startIndexCopy].getOutNeighbor(i);
+                uintV v = outNeighbors[i];
                 PageRankType vRank = pr_curr[startIndexCopy];
-                PageRankType out_degree_page_rank = (PageRankType) out_degree;
                 PageRankType previous = all_atomic[v].load();
                 PageRankType newVal = previous + (vRank / out_degree_page_rank);
+                
                 while(!all_atomic[v].compare_exchange_weak(previous, newVal)){
                     previous = all_atomic[v].load();
                     newVal = previous + (vRank / out_degree_page_rank);

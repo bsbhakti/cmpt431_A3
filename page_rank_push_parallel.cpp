@@ -4,6 +4,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include <thread>
+#include <unordered_map>
+
 
 #ifdef USE_INT
 #define INIT_PAGE_RANK 100000
@@ -24,7 +26,8 @@ CustomBarrier *barrier = nullptr;
 std::mutex pr_next_mutex;
 
 struct thread_args {
-    Graph *g;
+    // Graph *g;
+    Vertex *vertices;
     int max_iter;
     uintV startIndex;
     uintV endIndex;
@@ -36,38 +39,61 @@ struct thread_args {
 
 void pageRankThread(thread_args *thread_args){
     timer local;
-    local.start();
     // std::cout<<"Inside method"<<std::endl;
-    Graph *g = thread_args->g; 
+    // Graph *g = thread_args->g; 
+    Vertex *vertices = thread_args->vertices;
     int max_iter = thread_args->max_iter; 
     uintV startIndex  = thread_args->startIndex; 
     uintV endIndex  = thread_args->endIndex; 
     PageRankType* pr_curr  = thread_args->pr_curr; 
     PageRankType *pr_next  = thread_args->pr_next; 
     std::mutex *all_mutex = thread_args->all_mutex;
-    
+    local.start();
+    //map of index and pr_next acc to us
+
 
     for (int iter = 0; iter < max_iter; iter++) {
+    std::unordered_map<uintV, PageRankType> map;
+
     // for each vertex 'v' in this subset of vertices, process all its inNeighbors 'u'
         for (uintV startIndexCopy = startIndex; startIndexCopy < endIndex; startIndexCopy++){
-            uintE out_degree = g->vertices_[startIndexCopy].getOutDegree();
+            Vertex u = vertices[startIndexCopy];
+            uintE out_degree = u.getOutDegree();
+            PageRankType out_degree_page_rank = (PageRankType) out_degree;
+            uintV * outNeighbors = u.getOutNeighbors(); // list of indices of neighbours??
+            PageRankType u_curr = pr_curr[startIndexCopy];
+
             // std::cout<<"Number of out degree"<< out_degree<<std::endl;
             for (uintE i = 0; i < out_degree; i++) {
-                uintV v = g->vertices_[startIndexCopy].getOutNeighbor(i);
+                uintV v = outNeighbors[i];
+                
                 //have vertex lock here
-                // std::cout<<"Vertext locked"<<std::endl;
-                // pr_next_mutex.lock();
-                all_mutex[v].lock();
-                pr_next[v] += (pr_curr[startIndexCopy] / (PageRankType) out_degree);
-                // pr_next_mutex.unlock();
-                all_mutex[v].unlock();
-                // std::cout<<"Vertext unlocked"<<std::endl;
+                PageRankType newVal = u_curr/ out_degree_page_rank;
+                if(map.count(v) > 0){
+                  map[v] += newVal;
+                }
+                else {
+                  map[v] = newVal;
+                }
+                // all_mutex[v].lock();
+                // pr_next[v] += newVal;
+                // all_mutex[v].unlock();
                 //vertex unlock
             }
         }
-        
-    // std::cout<<"Waiting at the barrier"<<std::endl;
+    // for(int i=0; i < out_degree; i++){
+    //   uintV v = outNeighbors[i];
+    //   all_mutex[v].lock();
+    //   pr_next[v] += std::map.at(v);
+    //   all_mutex[v].unlock();
+    // }
 
+    for (const auto& pair : map) {
+      uintV v = pair.first;
+      all_mutex[v].lock();
+      pr_next[v] += pair.second;
+      all_mutex[v].unlock();
+    }
 
     // barrier wait here because we are about the switch curr and next
     barrier->wait();
@@ -75,7 +101,6 @@ void pageRankThread(thread_args *thread_args){
 
     for (uintV v = startIndex; v < endIndex; v++) {
       pr_next[v] = PAGE_RANK(pr_next[v]);
-
       // reset pr_curr for the next iteration
       pr_curr[v] = pr_next[v];
       pr_next[v] = 0.0;
@@ -104,8 +129,8 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   timer t1;
   double time_taken = 0.0;
 //   std::cout<<"Total num vertices "<<g.n_<<std::endl;
-  uint numOfVerPerThread = g.n_/nThreads;
-  uint remainder = g.n_% nThreads;
+  uint numOfVerPerThread = n/nThreads;
+  uint remainder = n% nThreads;
   uint startIndex = 0;
   uint endIndex = 0;
   t1.start();
@@ -120,7 +145,8 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
         endIndex += remainder;
     }
     // std::cout<<"StartInd: "<< startIndex<<"EndInd: "<<endIndex<< "Thread: "<<i<<std::endl;
-    all_arguments[i].g = &g;
+    // all_arguments[i].g = &g;
+    all_arguments[i].vertices = g.vertices_;
     all_arguments[i].max_iter = max_iters;
     all_arguments[i].startIndex = startIndex;
     all_arguments[i].endIndex = endIndex;
