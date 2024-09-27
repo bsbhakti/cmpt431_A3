@@ -45,6 +45,10 @@ void pageRankThread(thread_args *thread_args){
     PageRankType* pr_curr  = thread_args->pr_curr; 
     PageRankType *pr_next  = thread_args->pr_next; 
     std::mutex *all_mutex = thread_args->all_mutex;
+    // PageRankType pr_next_local [g->n_];
+    // for (uintV i = 0; i < g->n_; i++) {
+    //     pr_next_local[i] = 0.0;
+    // }
 
     for (int iter = 0; iter < max_iter; iter++) {
     // for each vertex 'v' in this subset of vertices, process all its inNeighbors 'u'
@@ -61,11 +65,12 @@ void pageRankThread(thread_args *thread_args){
                 // pr_next_mutex.unlock();
                 all_mutex[v].unlock();
                 // std::cout<<"Vertext unlocked"<<std::endl;
-
                 //vertex unlock
             }
         }
+        
     // std::cout<<"Waiting at the barrier"<<std::endl;
+
 
     // barrier wait here because we are about the switch curr and next
     barrier->wait();
@@ -101,7 +106,7 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   // Push based pagerank
   timer t1;
   double time_taken = 0.0;
-  std::cout<<"Total num vertices "<<g.n_<<std::endl;
+//   std::cout<<"Total num vertices "<<g.n_<<std::endl;
   uint numOfVerPerThread = g.n_/nThreads;
   uint remainder = g.n_% nThreads;
   uint startIndex = 0;
