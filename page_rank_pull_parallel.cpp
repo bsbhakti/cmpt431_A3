@@ -190,6 +190,7 @@ int main(int argc, char *argv[]) {
   barrier = new CustomBarrier((int)n_threads);
 
   pageRankSerial(g, max_iterations, n_threads);
+  delete barrier;
 
   return 0;
 }

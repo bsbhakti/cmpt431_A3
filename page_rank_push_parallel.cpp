@@ -98,6 +98,7 @@ void pageRankThread(thread_args *thread_args){
     barrier->wait();
 
   }
+  delete[] thread_args->local_next;
   thread_args->time_taken = local.stop();
 }
 
@@ -129,7 +130,7 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   for (uint i =0 ; i < nThreads; i++){
     startIndex = endIndex;
     endIndex = startIndex + numOfVerPerThread; 
-    PageRankType local_next [n];
+    PageRankType *local_next = new PageRankType[n];
 
 
     if( i == 0){
@@ -218,6 +219,7 @@ int main(int argc, char *argv[]) {
   std::cout << "Created graph\n";
   barrier = new CustomBarrier((int)n_threads);
   pageRankSerial(g, max_iterations,n_threads);
+  delete barrier;
 
   return 0;
 }
