@@ -30,7 +30,6 @@ struct thread_args {
     PageRankType* pr_curr;
     // PageRankType *pr_next;
     double time_taken;
-    PageRankType* local_next;
     std::atomic<PageRankType> *all_atomic;
     int32_t n;
 };
@@ -44,7 +43,6 @@ void pageRankThread(thread_args *thread_args){
     uintV startIndex  = thread_args->startIndex; 
     uintV endIndex  = thread_args->endIndex; 
     PageRankType* pr_curr  = thread_args->pr_curr; 
-    PageRankType *local_next  = thread_args->local_next; 
     std::atomic<PageRankType> *all_atomic = thread_args->all_atomic;
     
 
@@ -59,33 +57,18 @@ void pageRankThread(thread_args *thread_args){
             // std::cout<<"Number of out degree"<< out_degree<<std::endl;
             for (uintE i = 0; i < out_degree; i++) {
                 uintV v = outNeighbors[i];
-                // PageRankType vRank = pr_curr[startIndexCopy];
-                // PageRankType previous = all_atomic[v].load();
-                // PageRankType newVal = previous + (vRank / out_degree_page_rank);
+                PageRankType vRank = pr_curr[startIndexCopy];
+                PageRankType previous = all_atomic[v].load();
+                PageRankType newVal = previous + (vRank / out_degree_page_rank);
                 
-                // while(!all_atomic[v].compare_exchange_weak(previous, newVal)){
-                //     previous = all_atomic[v].load();
-                //     newVal = previous + (vRank / out_degree_page_rank);
-                // }
-                local_next[v] += (pr_curr[startIndexCopy] / out_degree_page_rank);
+                while(!all_atomic[v].compare_exchange_weak(previous, newVal)){
+                    previous = all_atomic[v].load();
+                    newVal = previous + (vRank / out_degree_page_rank);
+                }
             }
 
         }
-
-
-        for (uintV v = 0; v < thread_args->n; v++) {
-        PageRankType previous = all_atomic[v].load();
-        PageRankType newVal = previous + local_next[v];
-
-        while(!all_atomic[v].compare_exchange_weak(previous, newVal)){
-                    previous = all_atomic[v].load();
-                    newVal = previous + local_next[v];
-          }
-        local_next[v] = 0.0;
-
-        }
         
-
     // barrier wait here because we are about the switch curr and next
     barrier->wait();
     // std::cout<<"Done Waiting at the barrier"<<std::endl;
@@ -100,7 +83,6 @@ void pageRankThread(thread_args *thread_args){
     barrier->wait();
 
   }
-  delete [] local_next;
   thread_args->time_taken = local.stop();
 }
 
@@ -134,8 +116,6 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   for (uint i =0 ; i < nThreads; i++){
     startIndex = endIndex;
     endIndex = startIndex + numOfVerPerThread; 
-    PageRankType *local_next = new PageRankType[n];
-
     if( i == 0){
         endIndex += remainder;
     }
@@ -146,12 +126,8 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
     all_arguments[i].endIndex = endIndex;
     all_arguments[i].pr_curr = pr_curr;
     // all_arguments[i].pr_next = pr_next;
-    all_arguments[i].local_next = local_next;
     all_arguments[i].all_atomic = all_atomic;
     all_arguments[i].n = n;
-     for (uintV i = 0; i < n; i++) {
-    local_next[i] = 0.0;
-    }
 
     std::thread new_thread(pageRankThread,&all_arguments[i]);
     all_threads.push_back(std::move(new_thread));
