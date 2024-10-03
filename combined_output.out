@@ -1,0 +1,567 @@
+--- Contents of slurm-181702.out ---
+Running page_rank_pull_parallel with 1 Threads: Iteration 1 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 1
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 243.791980
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 243.792487
+
+
+--- Contents of slurm-181703.out ---
+Running page_rank_push_parallel with 1 Threads: Iteration 1 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 1
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 117.300013
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 117.501030
+
+
+--- Contents of slurm-181704.out ---
+Running page_rank_push_parallel_atomic with 1 Threads: Iteration 1 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 1
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 291.752354
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 291.752851
+
+
+--- Contents of slurm-181705.out ---
+Running page_rank_pull_parallel with 1 Threads: Iteration 2 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 1
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 244.520091
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 244.520847
+
+
+--- Contents of slurm-181718.out ---
+Running page_rank_push_parallel with 1 Threads: Iteration 2 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 1
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 103.214940
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 103.374821
+
+
+--- Contents of slurm-181719.out ---
+Running page_rank_push_parallel_atomic with 1 Threads: Iteration 2 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 1
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 228.831544
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 228.832075
+
+
+--- Contents of slurm-181720.out ---
+Running page_rank_pull_parallel with 1 Threads: Iteration 3 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 1
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 190.557014
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 190.557542
+
+
+--- Contents of slurm-181721.out ---
+Running page_rank_push_parallel with 1 Threads: Iteration 3 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 1
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 103.540857
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 103.700757
+
+
+--- Contents of slurm-181733.out ---
+Running page_rank_push_parallel_atomic with 1 Threads: Iteration 3 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 1
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 298.838127
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 298.838638
+
+
+--- Contents of slurm-181734.out ---
+Running page_rank_pull_parallel with 2 Threads: Iteration 1 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 2
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 110.361971
+1, 110.347195
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 110.362579
+
+
+--- Contents of slurm-181735.out ---
+Running page_rank_push_parallel with 2 Threads: Iteration 1 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 2
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 76.439341
+1, 76.244888
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 76.665998
+
+
+--- Contents of slurm-181736.out ---
+Running page_rank_push_parallel_atomic with 2 Threads: Iteration 1 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 2
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 154.987462
+1, 154.972943
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 154.988182
+
+
+--- Contents of slurm-181741.out ---
+Running page_rank_pull_parallel with 2 Threads: Iteration 2 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 2
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 111.375287
+1, 111.360345
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 111.375973
+
+
+--- Contents of slurm-181742.out ---
+Running page_rank_push_parallel with 2 Threads: Iteration 2 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 2
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 72.661155
+1, 72.485064
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 72.873381
+
+
+--- Contents of slurm-181743.out ---
+Running page_rank_push_parallel_atomic with 2 Threads: Iteration 2 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 2
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 144.596819
+1, 144.596771
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 144.597421
+
+
+--- Contents of slurm-181744.out ---
+Running page_rank_pull_parallel with 2 Threads: Iteration 3 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 2
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 108.865894
+1, 108.850603
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 108.866574
+
+
+--- Contents of slurm-181748.out ---
+Running page_rank_push_parallel with 2 Threads: Iteration 3 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 2
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 69.739416
+1, 69.559614
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 69.945083
+
+
+--- Contents of slurm-181749.out ---
+Running page_rank_push_parallel_atomic with 2 Threads: Iteration 3 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 2
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 142.622422
+1, 142.608790
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 142.623091
+
+
+--- Contents of slurm-181750.out ---
+Running page_rank_pull_parallel with 4 Threads: Iteration 1 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 4
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 51.210071
+1, 51.210020
+2, 51.209961
+3, 51.193534
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 51.210814
+
+
+--- Contents of slurm-181754.out ---
+Running page_rank_push_parallel with 4 Threads: Iteration 1 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 4
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 60.821346
+1, 60.607793
+2, 60.369447
+3, 60.119671
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 61.035473
+
+
+--- Contents of slurm-181755.out ---
+Running page_rank_push_parallel_atomic with 4 Threads: Iteration 1 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 4
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 86.378700
+1, 86.378646
+2, 86.378597
+3, 86.365791
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 86.379506
+
+
+--- Contents of slurm-181757.out ---
+Running page_rank_pull_parallel with 4 Threads: Iteration 2 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 4
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 53.914840
+1, 53.914787
+2, 53.914646
+3, 53.914600
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 53.916352
+
+
+--- Contents of slurm-181758.out ---
+Running page_rank_push_parallel with 4 Threads: Iteration 2 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 4
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 47.169274
+1, 46.968936
+2, 46.760724
+3, 46.539237
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 47.370465
+
+
+--- Contents of slurm-181760.out ---
+Running page_rank_push_parallel_atomic with 4 Threads: Iteration 2 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 4
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 69.989988
+1, 69.989934
+2, 69.989837
+3, 69.969599
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 69.991338
+
+
+--- Contents of slurm-181761.out ---
+Running page_rank_pull_parallel with 4 Threads: Iteration 3 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 4
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 46.566578
+1, 46.566547
+2, 46.566462
+3, 46.554108
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 46.567348
+
+
+--- Contents of slurm-181763.out ---
+Running page_rank_push_parallel with 4 Threads: Iteration 3 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 4
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 48.289508
+1, 48.075726
+2, 47.851056
+3, 47.614786
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 48.492922
+
+
+--- Contents of slurm-181764.out ---
+Running page_rank_push_parallel_atomic with 4 Threads: Iteration 3 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 4
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 72.823891
+1, 72.823825
+2, 72.823781
+3, 72.823728
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 72.824667
+
+
+--- Contents of slurm-181772.out ---
+Running page_rank_pull_parallel with 8 Threads: Iteration 1 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 8
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 37.651518
+1, 37.651467
+2, 37.638208
+3, 37.651357
+4, 37.638223
+5, 37.651233
+6, 37.651163
+7, 37.651109
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 37.652979
+
+
+--- Contents of slurm-181778.out ---
+Running page_rank_push_parallel with 8 Threads: Iteration 1 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 8
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 53.605980
+1, 53.366886
+2, 53.115244
+3, 52.836569
+4, 52.328575
+5, 51.876569
+6, 51.339724
+7, 51.059369
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 53.829384
+
+
+--- Contents of slurm-181782.out ---
+Running page_rank_push_parallel_atomic with 8 Threads: Iteration 1 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 8
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 35.303187
+1, 35.303153
+2, 35.289432
+3, 35.303099
+4, 35.302970
+5, 35.299289
+6, 35.299264
+7, 35.289440
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 35.304267
+
+
+--- Contents of slurm-181785.out ---
+Running page_rank_pull_parallel with 8 Threads: Iteration 2 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 8
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 31.198608
+1, 31.198556
+2, 31.198508
+3, 31.198399
+4, 31.198367
+5, 31.198255
+6, 31.198166
+7, 31.160537
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 31.200125
+
+
+--- Contents of slurm-181788.out ---
+Running page_rank_push_parallel with 8 Threads: Iteration 2 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 8
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 47.147526
+1, 46.939763
+2, 46.716102
+3, 46.480560
+4, 46.209177
+5, 45.949178
+6, 45.709528
+7, 45.435423
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 47.344612
+
+
+--- Contents of slurm-181790.out ---
+Running page_rank_push_parallel_atomic with 8 Threads: Iteration 2 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 8
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 44.721884
+1, 44.721805
+2, 44.721761
+3, 44.721667
+4, 44.721573
+5, 44.721480
+6, 44.721363
+7, 44.721260
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 44.724246
+
+
+--- Contents of slurm-181797.out ---
+Running page_rank_pull_parallel with 8 Threads: Iteration 3 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 8
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 35.936234
+1, 35.936200
+2, 35.936131
+3, 35.936068
+4, 35.935970
+5, 35.935878
+6, 35.935803
+7, 35.918314
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 35.937925
+
+
+--- Contents of slurm-181799.out ---
+Running page_rank_push_parallel with 8 Threads: Iteration 3 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 8
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 67.389570
+1, 67.156761
+2, 66.904536
+3, 66.642246
+4, 66.365215
+5, 66.042340
+6, 65.753036
+7, 65.427298
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 67.650034
+
+
+--- Contents of slurm-181801.out ---
+Running page_rank_push_parallel_atomic with 8 Threads: Iteration 3 InputFile: /scratch/input_graphs/test_25M_50M
+Using DOUBLE
+Number of Threads : 8
+Number of Iterations: 20
+Reading graph
+Created graph
+thread_id, time_taken
+0, 36.859192
+1, 36.859135
+2, 36.844435
+3, 36.859032
+4, 36.858919
+5, 36.858870
+6, 36.844420
+7, 36.858685
+Sum of page ranks : 13887925.279471
+Time taken (in seconds) : 36.861241
+
+
