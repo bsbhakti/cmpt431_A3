@@ -26,7 +26,6 @@ CustomBarrier *barrier = nullptr;
 std::mutex pr_next_mutex;
 
 struct thread_args {
-    // Graph *g;
     Vertex *vertices;
     int max_iter;
     uintV startIndex;
@@ -35,7 +34,6 @@ struct thread_args {
     PageRankType *pr_next;
     PageRankType *local_next;
     double time_taken;
-    std::mutex *all_mutex;
     int32_t n;
 };
 
@@ -51,7 +49,6 @@ void pageRankThread(thread_args *thread_args){
     PageRankType *pr_next  = thread_args->pr_next; 
     PageRankType *local_next  = thread_args->local_next; 
 
-    std::mutex *all_mutex = thread_args->all_mutex;
     local.start();
     //map of index and pr_next acc to us
 
@@ -80,12 +77,12 @@ void pageRankThread(thread_args *thread_args){
                 //vertex unlock
             }
         }
-        all_mutex[0].lock();
+        pr_next_mutex.lock();
         for (uintV i = 0; i < thread_args->n; i++) {
             pr_next[i] += local_next[i];
             local_next[i] = 0.0;
           }
-        all_mutex[0].unlock();
+        pr_next_mutex.unlock();
         
 
     // barrier wait here because we are about the switch curr and next
@@ -111,7 +108,6 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   PageRankType *pr_next = new PageRankType[n];
   std::vector<std::thread> all_threads(nThreads);
   thread_args *all_arguments = new thread_args [nThreads]; 
-  std::mutex *all_mutex = new std::mutex [g.n_]; 
 
   for (uintV i = 0; i < n; i++) {
     pr_curr[i] = INIT_PAGE_RANK;
@@ -133,7 +129,7 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   for (uint i =0 ; i < nThreads; i++){
     startIndex = endIndex;
     endIndex = startIndex + numOfVerPerThread; 
-    PageRankType *local_next = new PageRankType[n];
+    PageRankType local_next [n];
 
 
     if( i == 0){
@@ -147,7 +143,6 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
     all_arguments[i].endIndex = endIndex;
     all_arguments[i].pr_curr = pr_curr;
     all_arguments[i].pr_next = pr_next;
-    all_arguments[i].all_mutex = all_mutex;
     all_arguments[i].n = n;
     all_arguments[i].local_next = local_next;
     for (uintV i = 0; i < n; i++) {
@@ -184,7 +179,6 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   std::cout << "Time taken (in seconds) : " << time_taken << "\n";
   delete[] pr_curr;
   delete[] pr_next;
-  delete[] all_mutex;
   delete[] all_arguments;
 }
 

@@ -67,10 +67,9 @@ void pageRankThread(thread_args *thread_args){
                 }
                 // pr_next[v] += (pr_curr[startIndexCopy] / (PageRankType) out_degree);
             }
+
         }
         
-    // std::cout<<"Waiting at the barrier"<<std::endl;
-
 
     // barrier wait here because we are about the switch curr and next
     barrier->wait();
@@ -119,6 +118,7 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
   for (uint i =0 ; i < nThreads; i++){
     startIndex = endIndex;
     endIndex = startIndex + numOfVerPerThread; 
+    PageRankType *local_next = new PageRankType[n];
 
     if( i == 0){
         endIndex += remainder;
