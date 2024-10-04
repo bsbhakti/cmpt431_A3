@@ -98,7 +98,6 @@ void pageRankThread(thread_args *thread_args){
     barrier->wait();
 
   }
-  delete[] thread_args->local_next;
   thread_args->time_taken = local.stop();
 }
 
@@ -163,6 +162,7 @@ void pageRankSerial(Graph &g, int max_iters, uint nThreads) {
    // -------------------------------------------------------------------
   std::cout << "thread_id, time_taken" << std::endl;
   for (int i = 0 ; i<nThreads; i++){
+    delete[] all_arguments[i].local_next;
     std::cout << i<<", " << all_arguments[i].time_taken << std::endl;
   }
 
